@@ -18,8 +18,10 @@ class ThousandsFormatter extends NumberInputFormatter {
 
   final NumberFormat? formatter;
   final bool allowFraction;
+  final int? numberOfDecimal;
 
-  ThousandsFormatter({this.formatter, this.allowFraction = false})
+  ThousandsFormatter(
+      {this.formatter, this.allowFraction = false, this.numberOfDecimal})
       : _decimalSeparator = (formatter ?? _formatter).symbols.DECIMAL_SEP,
         _decimalRegex = RegExp(allowFraction
             ? '[0-9]+([${(formatter ?? _formatter).symbols.DECIMAL_SEP}])?'
@@ -53,11 +55,19 @@ class ThousandsFormatter extends NumberInputFormatter {
       String decimalOnly = decimalPlacesValue[1];
       double digitsOnly = double.tryParse(decimalPlacesValue[0]) ?? 0.0;
       String result = (formatter ?? _formatter).format(digitsOnly);
-      result = result + '.' + '$decimalOnly';
-      return result;
+      final decimalString = '$decimalOnly';
+      if (decimalString.length < (numberOfDecimal ?? 0)) {
+        result = result + '.' + decimalString;
+        return result;
+      } else {
+        result = result + '.' + decimalString.substring(0, 3);
+        return result;
+      }
     }
     return result;
   }
+
+  String textFromFormat(String digits) => _formatPattern(digits);
 
   @override
   TextEditingValue _formatValue(
@@ -119,17 +129,9 @@ class CreditCardFormatter extends NumberInputFormatter {
 /// format input displayed on [TextField]
 ///
 abstract class NumberInputFormatter extends TextInputFormatter {
-  TextEditingValue? _lastNewValue;
-
   @override
   TextEditingValue formatEditUpdate(
       TextEditingValue oldValue, TextEditingValue newValue) {
-    /// nothing changes, nothing to do
-    if (newValue.text == _lastNewValue?.text) {
-      return newValue;
-    }
-    _lastNewValue = newValue;
-
     /// remove all invalid characters
     newValue = _formatValue(oldValue, newValue);
 

@@ -62,7 +62,7 @@ class MyHomePage extends StatelessWidget {
                   keyboardType: TextInputType.number,
                   inputFormatters: [
                     LengthLimitingTextInputFormatter(15),
-                    ThousandsFormatter(allowFraction: true),
+                    ThousandsFormatter(allowFraction: true, numberOfDecimal: 3),
                   ],
                   style: TextStyle(fontSize: 16.0, color: Colors.black),
                 ),
