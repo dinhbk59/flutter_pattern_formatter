@@ -30,8 +30,8 @@ class ThousandsFormatter extends NumberInputFormatter {
                 : r'\d+'));
 
   @override
-  String _formatPattern(String? digits) {
-    if (digits == null || digits.isEmpty) return '';
+  String _formatPattern(String digits) {
+    if (digits.isEmpty) return digits;
     num number;
     if (allowFraction) {
       String decimalDigits = digits;
@@ -45,6 +45,16 @@ class ThousandsFormatter extends NumberInputFormatter {
     final result = (formatter ?? _formatter).format(number);
     if (allowFraction && digits.endsWith(_decimalSeparator)) {
       return '$result$_decimalSeparator';
+    }
+
+    // Fix the .0 or .01 or .10 and similar issues
+    if (digits.contains('.')) {
+      List<String> decimalPlacesValue = digits.split(".");
+      String decimalOnly = decimalPlacesValue[1];
+      double digitsOnly = double.tryParse(decimalPlacesValue[0]) ?? 0.0;
+      String result = (formatter ?? _formatter).format(digitsOnly);
+      result = result + '.' + '$decimalOnly';
+      return result;
     }
     return result;
   }
