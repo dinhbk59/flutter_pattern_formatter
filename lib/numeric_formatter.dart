@@ -60,7 +60,7 @@ class ThousandsFormatter extends NumberInputFormatter {
         result = result + '.' + decimalString;
         return result;
       } else {
-        result = result + '.' + decimalString.substring(0, 3);
+        result = result + '.' + decimalString.substring(0, numberOfDecimal);
         return result;
       }
     }
